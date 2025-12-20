@@ -1,0 +1,47 @@
+ip route 0.0.0.0 0.0.0.0 203.0.113.2
+
+***
+
+interface configure
+
+int g0/1
+ip address 192.168.1.1 255.255.255.0
+ip helper-address 192.168.4.2
+ip nat inside
+
+
+int g0/0
+ip address 192.168.3.1 255.255.255.252
+ip nat inside
+
+
+int g0/2
+ip address 203.0.113.1 255.255.255.252
+ip nat outside
+ip nat inside source list 1 int g0/2 overload
+ip nat inside source static 192.168.5.2 203.1.113.1
+
+
+***
+OSPF
+
+router ospf 1
+router-id 1.1.1.1
+network 192.168.1.0 0.0.0.255 area 0
+network 192.168.3.0 0.0.0.255 area 0
+network 203.0.113.0 0.0.0.3 area 0
+default-information originate
+
+****
+NAT + ACL
+
+access-list 1 permit 192.168.1.0 0.0.0.255
+access-list 1 permit 192.168.2.0 0.0.0.255
+access-list 1 permit any
+
+
+***
+
+
+
+

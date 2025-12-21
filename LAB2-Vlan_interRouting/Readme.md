@@ -1,4 +1,4 @@
-LAB1-Vlan_interRouting
+LAB2-Vlan_interRouting
 
 목표: ROAS와 L3 스위치를 이용해 vlan이 나뉘어져 있는 내부 pc들간의 통신을 가능하게 한다.
 

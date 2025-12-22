@@ -55,10 +55,11 @@ GNS3 기본 Ethernet switch를 사용해 ROAS 트렁크 환경을 구성할 경�
 DHCP ACK 패킷이 클라이언트까지 정상 전달되지 않는 현상을 확인하였다.
 debug ip dhcp server packet 상에서는 DORA 과정이 모두 완료되었으나,
 이는 GNS3 기본 스위치의 VLAN 태깅 처리 한계로 판단되어
-HQ-SW를 L3스위치로 대체하여 수행했다.
+HQ-SW를 L3스위치로 대체하여 수행했다. ( changed_topology )
+
 
 * 추가 2 *
-지금 사용가능한 GNS3의 스위치 이미지중에, 제대로 LAB을 구성할수 있는것이 없는것 같다.
+내가 지금 사용가능한 GNS3의 스위치 이미지중에, 제대로 LAB을 구성할수 있는것이 없는것 같다.
 그래서 PacketTracer로 구현한다.
 
 

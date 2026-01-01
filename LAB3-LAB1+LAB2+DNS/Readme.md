@@ -97,5 +97,7 @@ Packet Tracer 환경에서 라우터 인터페이스 수 제한이 있고, HQ �
 
 서버들은 Branch 라우터 측에 연결, HQ–Branch 간 OSPF를 통해 서버 접근성 확보라는 방식으로 설계를 수정하였다.
 
+추가로, Branch-SW는 L3 스위치이고, DHCP를 받는 g1/0/24가 no switchport 상태이기 때문에, L2 기능인 dhcp snooping을 사용할수 없다.
+그래서 Branch쪽은 잠시 보류하고, 다음 LAB에서 토폴로지 구성을 변경한다.
 
 

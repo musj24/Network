@@ -1,0 +1,45 @@
+route out 0.0.0.0 0.0.0.0 203.0.10.1
+route in 192.168.0.0 255.255.0.0 192.168.60.1
+
+***
+int vlan1
+nameif inside
+ip address 192.168.60.2 255.255.255.252
+
+int vlan2
+nameif outside
+ip address 203.0.10.2 255.255.255.252
+
+**
+
+int e0/1
+siwtchport access vlan1
+
+int e0/2
+switchport access vlan2
+
+**
+ICMP,HTTP inspection
+
+class-map inspection_default
+match default-inspection-traffic
+
+policy-map global_policy
+class inspection_default
+inspect icmp
+inspect http
+
+service-policy global_policy global
+***
+NAT
+
+object network inside-net
+subnet 192.168.0.0 255.255.0.0
+nat (inside,outside) dynamic interface
+
+**
+
+
+
+
+

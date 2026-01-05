@@ -1,107 +1,125 @@
-LAB2-Vlan_interRouting
 
-목표: ROAS와 L3 스위치를 이용해 vlan이 나뉘어져 있는 내부 pc들간의 통신을 가능하게 한다.
+---
 
-사용할 기술
-DHCP
-ROAS
+# LAB2 – ROAS 기반 Inter-VLAN Routing 및 DHCP 분산 구성
 
+## 1. LAB 개요 및 목표
 
-고려할 점
-1. 구역은 HQ와 Branch로 나누되, 내부 PC들도 단일 네트워크가 아닌, 다중 네트워크로 분할한다.
-2. 내부 PC들은 서로 통신 가능해야 하며, 외부 인터넷 (8.8.8.8)과 통신도 가능해야 한다.
-3. HQ-Router와 SW간 링크는 트렁크로 구성해야 정상적인 동작이 가능함.
-4. native vlan은 99로 설정한다.
-5. L3 스위치는 no switchport와 ip routing 명령어 사용에 유념한다
-6. 라우터간 연결은 OSPF가 아닌, 정적 경로를 이용한다.
+본 LAB은 HQ와 Branch 환경에서 VLAN을 분리하고,
+Router-on-a-Stick(ROAS) 방식을 통해 Inter-VLAN Routing을 구현하는 것을 목표로 한다.
 
+또한 HQ와 Branch 각각에서 DHCP 기능을 직접 수행하도록 구성하여,
+VLAN 단위 IP 할당 및 기본 게이트웨이 동작을 검증한다.
 
-검증할 점
-1. 내부 PC들간 통신이 가능한가?
-2. PC와 외부 인터넷(8.8.8.8)이 통신 가능한가?
-   
+구체적인 목표는 다음과 같다.
 
-트러블슈팅
+* HQ 및 Branch 환경에서 VLAN 분리 구성
+* ROAS 기반 Inter-VLAN Routing 구현
+* 각 VLAN에 대한 DHCP 자동 할당
+* HQ–Branch 간 라우팅 구성
+* 내부 PC 간 및 외부 네트워크(Internet) 접근 검증
 
-1.ROAS의 가상 인터페이스에 encapsulation dot1q가 빠진다면?
+---
 
-[증상]
+## 2. 전체 토폴로지 설명
 
-VLAN10 PC에서 Default Gateway로 ping 실패 VLAN20/30 정상
+* 네트워크는 HQ, Branch, ISP, Internet 영역으로 구성된다.
+* HQ와 Branch 각각에 Access Switch가 위치하며, VLAN 10/20/30을 사용한다.
+* HQ와 Branch 라우터는 각각 ROAS 방식으로 VLAN 게이트웨이 역할을 수행한다.
+* ISP 및 Internet 영역은 외부 네트워크 역할을 수행하며,
+  Internet은 Loopback 주소(8.8.8.8)로 단순화하였다.
 
-[확인]
+---
 
-show interfaces trunk show ip interface brief show run interface g0/0.10
+## 3. 설계 및 구성 시 고려 사항
 
-[원인]
+### 3.1 전체 설계 방향
 
-Sub-interface에 dot1q encapsulation 설정 누락
+* VLAN 간 트래픽은 라우터에서 처리하도록 하여 L2/L3 역할을 명확히 분리한다.
+* 각 사이트(HQ, Branch)는 독립적인 DHCP 서버 역할을 수행하도록 구성한다.
+* 이후 LAB 확장을 고려하여 VLAN 구조를 동일하게 유지한다.
 
-[조치]
+---
 
-encapsulation dot1q 10 추가
+### 3.2 VLAN 및 ROAS 설계
 
-[결과]
+* HQ 및 Branch 모두 다음 VLAN을 사용한다.
 
-VLAN10 PC 정상 통신 확인
+  * VLAN 10
+  * VLAN 20
+  * VLAN 30
+* Access Switch와 라우터 간 링크는 Trunk로 구성한다.
+* ROAS를 위해 라우터의 서브인터페이스를 다음과 같이 구성한다.
 
-2.L3 스위치의 ip routing이 빠진다면?
+  * `G0/2.10` – VLAN 10
+  * `G0/2.20` – VLAN 20
+  * `G0/2.30` – VLAN 30
+  * `G0/2.99` – Native VLAN
+* 각 VLAN의 Default Gateway는 `.1` 주소로 설정한다.
 
-[증상]
+---
 
-Branch-SW 에서 라우팅 테이블이 올라오지 않는다.
+### 3.3 DHCP 설계
 
-[확인]
+* HQ 라우터는 HQ VLAN에 대한 DHCP 서버 역할을 수행한다.
 
-show ip route
+  * VLAN 10: `192.168.1.0/24`
+  * VLAN 20: `192.168.2.0/24`
+  * VLAN 30: `192.168.3.0/24`
+* Branch 라우터는 Branch VLAN에 대한 DHCP 서버 역할을 수행한다.
 
-[원인]
+  * VLAN 10: `192.168.10.0/24`
+  * VLAN 20: `192.168.20.0/24`
+  * VLAN 30: `192.168.30.0/24`
+* 각 VLAN에서 `.1` 주소는 게이트웨이로 사용하며,
+  `.0–.10` 범위는 DHCP 제외 주소로 설정한다.
 
-Branch-SW 설정에 ip routing 명령어 누락
+---
 
-[조치]
+### 3.4 라우팅 설계
 
-ip routing 명령어 추가
+* HQ와 Branch 간에는 정적 라우팅 또는 기본 라우팅을 통해 상호 통신을 구성한다.
+* 외부 Internet 접근을 위해 HQ에서 Default Route를 설정한다.
+* Internet은 실제 환경 대신 Loopback 주소 `8.8.8.8`로 대체하여 검증한다.
 
-[결과]
+---
 
-라우팅 테이블이 올라오고, L3 스위치가 라우팅 기능 수행가능
+## 4. 사용 기술
 
-3.Branch<->L3 스위치 연결간에, no switchport가 빠진다면?
+* VLAN
+* Trunk / Native VLAN
+* Router-on-a-Stick (ROAS)
+* DHCP
+* Static / Default Routing
 
-[증상]
+---
 
-Branch-SW가 라우터와 마주보는 인터페이스에 ip 주소를 부여하지 못한다.
+## 5. 검증 항목
 
-[확인]
+* 동일 VLAN 내 PC 간 통신 가능 여부
+* 서로 다른 VLAN 간 Inter-VLAN Routing 정상 동작 여부
+* HQ VLAN ↔ Branch VLAN 간 통신 가능 여부
+* 각 VLAN PC가 DHCP로 IP를 정상 할당받는지 확인
+* 내부 PC에서 Internet(8.8.8.8) 접근 가능 여부
 
-ip address show run interface GigabitEthernet1/0/24 no switchport
+---
 
-[원인]
+## 6. 트러블슈팅 포인트
 
-interface g1/0/24에 no switchport 설정 누락 확인.
+* Trunk 설정 오류 시 VLAN 트래픽 전달 실패
+* Native VLAN 불일치로 인한 통신 문제
+* 서브인터페이스에 `encapsulation dot1q` 설정 누락
+* DHCP Pool 네트워크 주소 불일치
+* Default Route 미설정 시 외부 통신 실패
 
-[조치]
+---
 
-interface g1/0/24에 no switchport 설정
+## 7. 설계 한계 및 범위
 
-[결과]
+* 본 LAB은 단일 라우터 기반 구조로 구성되어,
+  게이트웨이 및 라우터 이중화는 고려하지 않았다.
+* DHCP를 각 라우터에서 개별적으로 수행하므로,
+  중앙 집중형 DHCP 구조는 이후 LAB에서 다룬다.
 
-인터페이스에 주소 부여 성공 및 패킷전달 가능
-
-
-
-
-
-* 추가 *
-원래는 GNS3로 구현하려 했으나,
-GNS3 기본 Ethernet switch를 사용해 ROAS 트렁크 환경을 구성할 경우,
-DHCP ACK 패킷이 클라이언트까지 정상 전달되지 않는 현상을 확인하였다.
-debug ip dhcp server packet 상에서는 DORA 과정이 모두 완료되었으나,
-HQ-SW를 L3스위치로 대체하여 수행했다. ( changed_topology )
-
-
-* 추가 2 *
-내가 지금 사용가능한 GNS3의 스위치 이미지중에, 제대로 LAB을 구성할수 있는것이내가 지금 사용가능한 GNS3의 스위치 이미지중에, 제대로 LAB을 구현할수 있는것이 없어서,
-토폴로지만 남기고 PacketTracer로 구현한다.
+---
 

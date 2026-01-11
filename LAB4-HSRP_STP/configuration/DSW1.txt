@@ -1,0 +1,133 @@
+ip routing
+spanning-tree mode rapid-pvst
+spanning-tree vlan 1-4094 root primary
+ip route 0.0.0.0 0.0.0.0 192.168.10.2 200
+ip dhcp snooping
+
+
+****
+vlan 10
+name HQ_10
+ex
+
+vlan 20
+name HQ_20
+ex
+
+vlan 30
+name HQ_30
+ex
+
+vlan 50
+name Servers
+ex
+
+vlan 99
+name native
+ex
+
+***
+HSRP
+
+int vlan 10
+ip address 192.168.1.2 255.255.255.0
+ip helper-address 192.168.50.2
+standby 10 ip 192.168.1.1 
+standby 10 priority 110
+standby 10 preempt
+
+
+ex
+
+int vlan 20
+ip address 192.168.2.2 255.255.255.0
+ip helper-address 192.168.50.2
+standby 20 ip 192.168.2.1 
+standby 20 priority 110
+standby 20 preempt
+
+ex
+
+int vlan 30
+ip address 192.168.3.2 255.255.255.0
+ip helper-address 192.168.50.2
+standby 30 ip 192.168.3.1 
+standby 30 priority 110
+standby 30 preempt
+ex
+
+int vlan 50
+ip address 192.168.50.2 255.255.255.248
+ex
+
+***
+Etherchannel
+
+int g1/0/1
+no switchport
+ip address 192.168.10.1 255.255.255.252
+
+int g1/0/2
+no switchport
+ip address 192.168.100.2 255.255.255.252
+ip ospf 1 area 0
+
+int port-channel 1
+switchport mode trunk
+switchport trunk native vlan 99
+switchport trunk allowed vlan 10,20,30,99
+
+
+
+int range g1/0/3 - 4
+switchport mode trunk
+switchport trunk native vlan 99
+switchport trunk allowed vlan 10,20,30,99
+ip dhcp snooping vlan 10,20,30,50,99
+ip arp inspection vlan 10,20,30,50,99
+ip arp inspection trust
+ip dhcp snooping trust
+
+channel-group 1 mode active
+
+int port-channel 2
+switchport mode trunk
+switchport trunk native vlan 99
+switchport trunk allowed vlan 10,20,30,99
+
+int range g1/0/7 - 8
+switchport mode trunk
+switchport trunk native vlan 99
+switchport trunk allowed vlan 10,20,30,99
+ip dhcp snooping vlan 10,20,30,50,99
+ip arp inspection vlan 10,20,30,50,99
+ip arp inspection trust
+ip dhcp snooping trust
+channel-group 2 mode active
+
+***
+int range g1/0/23 - 4
+switch mode access
+switch access vlan 50
+
+***
+router ospf 1
+router-id 1.1.1.1
+network 192.168.1.0 0.0.0.255 area 0
+network 192.168.2.0 0.0.0.255 area 0
+network 192.168.3.0 0.0.0.255 area 0
+network 192.168.50.0 0.0.0.255 area 0
+network 192.168.10.0 0.0.0.3 area 0
+passive-interface default
+no passive-interface g1/0/1
+no passive-interface g1/0/2
+
+***
+int g1/0/23
+ip dhcp snooping vlan 10,20,30,50,99
+ip dhcp snooping trust
+ip arp inspection vlan 10,20,30,50,99
+ip arp inspection trust
+
+
+

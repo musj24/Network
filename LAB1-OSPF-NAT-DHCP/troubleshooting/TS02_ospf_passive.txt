@@ -1,0 +1,29 @@
+# TS02 - passive-interface 오적용으로 OSPF 이웃 형성 실패
+
+## 증상
+- HQ ↔ Branch 또는 HQ ↔ ISP 구간에서 OSPF neighbor가 안 올라옴
+- 내부망 간 ping 실패(예: HQ PC ↔ Branch PC)
+
+## 가장 유력한 원인
+- OSPF에서 `passive-interface`를 잘못 적용(이웃 형성해야 할 링크에 적용)
+
+## 확인 절차
+1) 각 라우터에서 이웃 확인
+- `show ip ospf neighbor`
+  - 기대: HQ는 Branch/ISP 이웃이 FULL
+
+2) OSPF 인터페이스 상태 확인
+- `show ip ospf interface brief`
+  - 기대: 이웃 형성 링크가 OSPF enabled 상태
+
+3) 설정 확인
+- `show run | section router ospf`
+  - passive-interface가 어느 포트에 걸려있는지 확인
+
+## 조치
+- 이웃이 필요 없는 구간만 passive 적용
+- 이웃이 필요한 링크(HQ–Branch, HQ–ISP)는 passive 제외
+
+## 재검증
+- `show ip ospf neighbor`에서 FULL 확인
+- HQ PC ↔ Branch PC ping 성공 확인

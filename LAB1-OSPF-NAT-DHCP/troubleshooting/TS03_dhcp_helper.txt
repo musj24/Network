@@ -1,0 +1,31 @@
+# TS03 - ip helper-address 누락으로 DHCP 할당 실패
+
+## 증상
+- HQ/Branch PC가 IP를 못 받음(169.254.x.x 또는 0.0.0.0)
+- 수동 IP 설정 시에는 내부 ping이 되는데, 자동 할당만 실패
+
+## 가장 유력한 원인
+- HQ 또는 Branch의 LAN 인터페이스에 `ip helper-address` 누락
+- helper 주소 오타(예: DHCP 서버 IP 불일치)
+
+## 확인 절차
+1) PC에서 IP 상태 확인
+- (PC) IP 설정 화면 또는 `ipconfig /all`
+  - 기대: 192.168.1.x / 192.168.2.x 할당
+
+2) 라우터에서 helper 확인
+- HQ: `show run interface g0/1`
+- Branch: `show run interface g0/1`
+  - 기대: `ip helper-address 192.168.4.2` 존재(서버 IP에 맞게)
+
+3) DHCP 서버/경로 확인
+- 라우터에서 DHCP 서버(192.168.4.2)로 ping 가능 여부 확인
+
+## 조치
+- 해당 LAN 인터페이스에 helper 추가
+  - `interface g0/1`
+  - `ip helper-address 192.168.4.2`
+
+## 재검증
+- PC DHCP Renew(또는 PT에서 DHCP 재요청)
+- IP/게이트웨이/DNS가 정상 할당되는지 확인

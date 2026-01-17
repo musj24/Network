@@ -1,0 +1,42 @@
+# TS04 - Static NAT와 PAT 주소 충돌 또는 NAT 정책 오류
+
+## 증상
+- 내부 PC에서 8.8.8.8 ping 실패(라우팅/OSPF는 정상인데 외부만 안 됨)
+- `show ip nat translations`에 엔트리가 안 생기거나 예상과 다르게 표시됨
+- 외부에서 203.1.113.1 접근이 불안정/실패
+
+## 가장 유력한 원인
+1) Static NAT 공인 IP와 PAT 사용 범위가 겹치거나
+2) NAT inside/outside 지정 오류
+3) PAT ACL 매칭 오류(허용 대역 누락 등)
+
+## 확인 절차
+1) NAT inside/outside 확인
+- HQ: `show run interface g0/0`
+- HQ: `show run interface g0/1`
+- HQ: `show run interface g0/2`
+  - 기대: 내부(g0/0,g0/1)=inside, 외부(g0/2)=outside
+
+2) PAT 룰 및 ACL 확인
+- HQ: `show run | include ip nat inside source`
+- HQ: `show access-lists 1`
+  - 기대: 내부 대역이 ACL에 포함되어야 함
+
+3) Static NAT 확인
+- HQ: `show ip nat translations | include 203.1.113.1`
+  - 기대: 192.168.5.2 ↔ 203.1.113.1 정적 매핑 존재
+
+4) 리턴 경로(외부→서버) 확인
+- ISP: `show ip route 203.1.113.1`
+  - 기대: 203.1.113.1/32가 HQ로 향함
+
+## 조치
+- NAT inside/outside 재지정(필요 시)
+- PAT ACL에 누락된 내부 대역 추가
+- Static NAT 공인 IP와 PAT 공인 IP(인터페이스 IP) 충돌 여부 재확인
+- ISP에 203.1.113.1/32 호스트 라우트 추가(누락 시)
+
+## 재검증
+- 내부 PC → 8.8.8.8 ping 성공
+- HQ: `show ip nat translations`에 PAT 변환 엔트리 생성
+- 외부(Internet/ISP) → 203.1.113.1 ping/접근 가능

@@ -1,0 +1,20 @@
+[검증항목]
+- 항목: 내부 → 외부 트래픽에 대한 NAT 변환 동작 확인
+- 목적: 내부 사설 IP(192.168.x.x)가 ASA에서 outside 인터페이스 IP로 변환되어 외부 통신이 되는지 확인
+- 기대결과:
+  - 내부 PC에서 외부(8.8.8.8 또는 외부 웹 서버) 통신 성공
+  - ASA NAT(xlate) 테이블에 변환 엔트리 생성
+
+[구성 참고]
+- ASA PAT: inside-net(192.168.0.0/16) → outside 인터페이스 dynamic 
+- ASA 라우팅: inside는 HQ로, outside는 Internet으로 
+
+[실행]
+1) 트래픽 생성
+- 내부 PC에서 ping 8.8.8.8 
+
+
+2) ASA에서 NAT 변환 확인
+- show xlate
+- show nat
+

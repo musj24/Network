@@ -1,0 +1,26 @@
+[검증항목]
+- 항목: HQ–Branch 간 OSPF 이웃 관계 형성 및 라우팅 정보 교환 여부 확인
+- 목적: OSPF로 HQ/Branch 내부망 라우팅이 동적으로 교환되는지 확인
+- 기대결과:
+  - HQ 라우터에서 Branch 방향 이웃 FULL
+  - Branch 라우터에서 HQ 방향 이웃 FULL
+  - 라우팅 테이블에 상대 대역이 OSPF로 학습
+
+[구성 참고]
+- HQ OSPF 구성(내부망/Branch 링크 광고) 
+- Branch 라우터 OSPF 구성 
+- Branch-SW도 OSPF로 VLAN 대역 광고
+
+[실행]
+1) HQ 라우터
+- show ip ospf neighbor
+- show ip route
+
+2) Branch 라우터
+- show ip ospf neighbor
+- show ip route
+
+3) Branch-SW
+- show ip ospf neighbor
+- show ip route
+

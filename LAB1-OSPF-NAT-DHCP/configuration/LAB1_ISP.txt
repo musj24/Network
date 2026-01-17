@@ -1,32 +1,29 @@
+
+# [0] 정적 라우팅
+! Internet 방향 디폴트 라우트
 ip route 0.0.0.0 0.0.0.0 203.0.114.2
+
+! Branch 내부 서버 Static NAT(203.1.113.1) 리턴 경로 보장용 Host Route
 ip route 203.1.113.1 255.255.255.255 203.0.113.1
 
-****
-interface configure
+# [1] 인터페이스 설정
+! --- ISP <-> HQ ---
+interface g0/2
+ ip address 203.0.113.2 255.255.255.252
 
-int g0/2
-ip address 203.0.113.2 255.255.255.252
+! --- ISP <-> Internet ---
+interface g0/0
+ ip address 203.0.114.1 255.255.255.252
 
-int g0/0
-ip address 203.0.114.1 255.255.255.252
+! --- ISP <-> DHCP 서버 ---
+interface g0/1
+ ip address 192.168.4.1 255.255.255.252
 
-int g0/1
-ip address 192.168.4.1 255.255.255.252
-
-****
-OSPF
-
+# [2] 라우팅 프로토콜 (OSPF)
 router ospf 1
-router-id 3.3.3.3
-network 203.0.113.0 0.0.0.3 area 0
-network 203.0.114.0 0.0.0.3 area 0
-network 192.168.4.0 0.0.0.3 area 0
-passive-interface gig0/0
-passive-interface gig0/1
-
-****
-
-
-
-
-
+ router-id 3.3.3.3
+ network 203.0.113.0 0.0.0.3 area 0
+ network 203.0.114.0 0.0.0.3 area 0
+ network 192.168.4.0 0.0.0.3 area 0
+ passive-interface gig0/0
+ passive-interface gig0/1

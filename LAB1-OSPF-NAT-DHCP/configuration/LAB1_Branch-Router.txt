@@ -1,22 +1,21 @@
-interface configure
 
-int g0/0
-ip address 192.168.3.2 255.255.255.252
+# [1] 인터페이스 설정
+! --- Branch <-> HQ 전용 링크 (192.168.3.0/30) ---
+interface g0/0
+ ip address 192.168.3.2 255.255.255.252
 
-int g0/1
-ip address 192.168.2.1 255.255.255.0
-ip helper-address 192.168.4.2
+! --- Branch 내부 LAN (192.168.2.0/24) ---
+interface g0/1
+ ip address 192.168.2.1 255.255.255.0
+ ip helper-address 192.168.4.2
 
-int g0/2
-ip address 192.168.5.1 255.255.255.252
+! --- Branch 내부 서버망 (192.168.5.0/30) ---
+interface g0/2
+ ip address 192.168.5.1 255.255.255.252
 
-****
-OSPF
-
+# [2] 라우팅 프로토콜 (OSPF)
 router ospf 1
-router-id 2.2.2.2
-network 192.168.3.0 0.0.0.3 area 0
-network 192.168.2.0 0.0.0.255 area 0
-network 192.168.5.0 0.0.0.3 area 0
-
-****
+ router-id 2.2.2.2
+ network 192.168.3.0 0.0.0.3 area 0
+ network 192.168.2.0 0.0.0.255 area 0
+ network 192.168.5.0 0.0.0.3 area 0

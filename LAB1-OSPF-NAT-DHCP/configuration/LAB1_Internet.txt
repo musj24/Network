@@ -1,12 +1,10 @@
+
+# [0] 정적 라우팅
 ip route 0.0.0.0 0.0.0.0 203.0.114.1
 
-****
-interface configure
+# [1] 인터페이스 설정
+interface g0/0
+ ip address 203.0.114.2 255.255.255.252
 
-int g0/0
-ip address 203.0.114.2 255.255.255.252
-
-int loopback0
-ip address 8.8.8.8 255.255.255.255
-
-****
+interface loopback0
+ ip address 8.8.8.8 255.255.255.255

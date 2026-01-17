@@ -1,0 +1,21 @@
+[검증항목]
+- 항목: HQ 내부 PC ↔ Branch 내부 PC 간 Ping 성공 여부
+- 목적: HQ–Branch 간 OSPF 라우팅이 정상이며, 양쪽 LAN(192.168.1.0/24 ↔ 192.168.2.0/24) 간 End-to-End 통신이 되는지 확인
+- 기대결과: HQ PC에서 Branch PC로 ping 성공, Branch PC에서 HQ PC로 ping 성공
+
+[사전조건]
+- HQ PC가 192.168.1.0/24 대역 IP를 정상 할당받음(DHCP)
+- Branch PC가 192.168.2.0/24 대역 IP를 정상 할당받음(DHCP)
+- HQ–Branch 라우터 간 OSPF 인접 형성(FULL)
+
+[실행]
+1) HQ-PC1에서 Branch-PC1로 ping
+- 장비/PC: HQ-PC1
+- 명령어/동작: ping 192.168.2.X   (Branch-PC1 실제 IP로 치환)
+
+
+2) Branch-PC1에서 HQ-PC1로 ping
+- 장비/PC: Branch-PC1
+- 명령어/동작: ping 192.168.1.X   (HQ-PC1 실제 IP로 치환)
+
+

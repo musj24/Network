@@ -1,0 +1,18 @@
+[검증항목]
+- 항목: Branch 내부 서버가 203.1.113.1 주소로 Static NAT 변환되는지 확인
+- 목적: 내부 서버(192.168.5.2)가 고정 공인 IP(203.1.113.1)로 정적 매핑되어 외부에서 접근 가능한지 확인
+- 기대결과:
+  - HQ에서 static NAT 매핑이 항상 존재(상시 엔트리)
+  - 외부(Internet/ISP)에서 203.1.113.1로 도달 가능(가능한 범위 내)
+
+[실행]
+1) HQ에서 Static NAT 매핑 확인
+- 장비: R1_HQ
+- 명령어: show ip nat translations | include 203.1.113.1
+  (또는 show ip nat translations 전체 확인)
+
+2) 외부에서 203.1.113.1 접근 시도
+- 장비: R4_Internet 또는 R3_ISP
+- 명령어/동작: ping 203.1.113.1
+
+

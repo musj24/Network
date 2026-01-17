@@ -1,0 +1,19 @@
+[검증항목]
+- 항목: 내부 트래픽이 HQ G0/2 인터페이스 주소로 PAT 변환되는지 확인
+- 목적: HQ/Branch 내부 사설 IP가 HQ의 공인 인터페이스(203.0.113.1)로 overload(PAT) 변환되어 Internet과 통신하는지 확인
+- 기대결과:
+  - 내부 단말(192.168.1.x 또는 192.168.2.x)의 트래픽이 inside global 203.0.113.1로 변환된 엔트리 생성
+  - NAT statistics에서 hits 증가
+
+[실행]
+1) 트래픽 생성(PC에서 외부로 ping)
+- 장비/PC: HQ-PC1 또는 Branch-PC1
+- 동작: ping 8.8.8.8 (3~5회)
+
+2) HQ에서 NAT 변환 테이블 확인
+- 장비: R1_HQ
+- 명령어: show ip nat translations
+
+3) HQ에서 NAT 통계 확인
+- 장비: R1_HQ
+- 명령어: show ip nat statistics

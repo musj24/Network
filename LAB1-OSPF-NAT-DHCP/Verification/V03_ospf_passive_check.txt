@@ -1,0 +1,22 @@
+[검증항목]
+- 항목: ISP의 G0/0, G0/1 인터페이스에 passive-interface 적용 여부
+- 목적: ISP에서 Internet 방향(G0/0) 및 DHCP 서버 방향(G0/1)에 불필요한 OSPF 인접이 형성되지 않도록 제어되는지 확인
+- 기대결과:
+  - ISP에서 G0/0, G0/1은 passive 상태(hello 미송신/인접 미형성)
+  - HQ 연결 인터페이스(G0/2)는 OSPF 인접이 정상 유지
+
+[실행]
+1) ISP에서 OSPF 인터페이스 상태 확인
+- 장비: R3_ISP
+- 명령어: show ip ospf interface brief
+
+
+2) ISP에서 OSPF 설정 확인(passive-interface 문구 확인)
+- 장비: R3_ISP
+- 명령어: show run | section router ospf
+
+
+[참고 증빙(선택)]
+- ISP에서 OSPF neighbor 확인
+- 장비: R3_ISP
+- 명령어: show ip ospf neighbor

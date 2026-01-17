@@ -1,0 +1,27 @@
+# TS06 - DAI 동작 실패(ARP 차단) 또는 바인딩 테이블 미생성
+
+## 증상
+- 특정 VLAN에서 ARP가 차단되어 통신 불가(간헐적 또는 전체)
+- ip arp inspection drop 메시지(가능 시) 또는 PC 통신 장애
+
+## 유력 원인
+- DHCP Snooping 바인딩 테이블이 비어 있음(정상 바인딩 없으면 DAI가 차단할 수 있음)
+- Trust/Untrust 포트 설정 오류(업링크를 trust로 안 둠)
+- DAI 적용 VLAN 목록 누락/오설정
+
+## 확인 절차(HQ-SW 기준)
+1) DHCP Snooping 활성/VLAN 확인
+- show ip dhcp snooping
+2) Trust 포트 확인
+- show run | sec interface 
+3) DAI 적용 VLAN 확인
+- show ip arp inspection vlan
+
+## 조치
+- 업링크(trunk)를 snooping trust + arp inspection trust로 설정
+- snooping vlan / arp inspection vlan 목록을 실제 사용 VLAN과 일치시킴
+- 바인딩 생성 확인 후 DAI 적용(필요 시 단계적으로 적용)
+
+## 재검증
+- DHCP 정상 할당 후 통신 정상
+- snooping binding/inspection 상태 정상 확인

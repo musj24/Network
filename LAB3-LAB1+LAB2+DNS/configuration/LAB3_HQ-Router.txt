@@ -1,0 +1,58 @@
+# [0] DNS(장비 자체 네임서버 설정)
+ip name-server 192.168.50.3
+
+# [1] 정적 라우팅(외부 기본 경로: ASA inside로 전달)
+ip route 0.0.0.0 0.0.0.0 192.168.60.2
+
+# [2] 인터페이스 - ROAS(서브인터페이스) / WAN 링크
+! --- 물리 인터페이스 활성화(ROAS 베이스) ---
+interface g0/2
+ no shut
+
+
+! --- ROAS: VLAN 10/20/30 + Native VLAN 99 ---
+interface g0/2.10
+ encapsulation dot1q 10
+ ip address 192.168.1.1 255.255.255.0
+ ip helper-address 192.168.50.3
+
+interface g0/2.20
+ encapsulation dot1q 20
+ ip address 192.168.2.1 255.255.255.0
+ ip helper-address 192.168.50.3
+
+
+interface g0/2.30
+ encapsulation dot1q 30
+ ip address 192.168.3.1 255.255.255.0
+ ip helper-address 192.168.50.3
+
+
+interface g0/2.99
+ encapsulation dot1q 99 native
+ ip address 192.168.99.1 255.255.255.0
+ ip helper-address 192.168.50.3
+
+
+! --- HQ <-> ASA(Inside) ---
+interface g0/1
+ ip address 192.168.60.1 255.255.255.252
+ no shut
+
+
+! --- HQ <-> Branch ---
+interface g0/0
+ ip address 192.168.200.1 255.255.255.252
+ no shut
+
+
+# [3] 라우팅(OSPF)
+router ospf 1
+ router-id 1.1.1.1
+ network 192.168.1.0 0.0.0.255 area 0
+ network 192.168.2.0 0.0.0.255 area 0
+ network 192.168.3.0 0.0.0.255 area 0
+ network 192.168.99.0 0.0.0.255 area 0
+ network 192.168.60.0 0.0.0.3 area 0
+ network 192.168.200.0 0.0.0.3 area 0
+ passive-interface g0/1

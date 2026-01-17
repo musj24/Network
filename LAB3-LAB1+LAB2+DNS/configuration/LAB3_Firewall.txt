@@ -1,0 +1,40 @@
+
+# [0] 라우팅
+route out 0.0.0.0 0.0.0.0 203.0.10.1
+route in 192.168.0.0 255.255.0.0 192.168.60.1
+
+# [1] 인터페이스(SVI)
+int vlan1
+ nameif inside
+ ip address 192.168.60.2 255.255.255.252
+
+int vlan2
+ nameif outside
+ ip address 203.0.10.2 255.255.255.252
+
+# [2] 스위치 포트 VLAN 할당(ASA 스위치포트)
+int e0/1
+ siwtchport access vlan1
+
+int e0/2
+ switchport access vlan2
+
+# [3] 기본 검사(inspection) - ICMP/HTTP
+class-map inspection_default
+ match default-inspection-traffic
+
+policy-map global_policy
+ class inspection_default
+  inspect icmp
+  inspect http
+
+service-policy global_policy global
+
+# [4] NAT(PAT) - 내부(192.168.0.0/16) → outside 인터페이스
+object network inside-net
+ subnet 192.168.0.0 255.255.0.0
+ nat (inside,outside) dynamic interface
+
+
+
+

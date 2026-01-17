@@ -1,0 +1,31 @@
+# TS04 - Default Route 미설정으로 외부(Internet) 통신 실패
+
+## 증상
+- 내부 VLAN 간 통신은 정상인데 `ping 8.8.8.8`만 실패
+- HQ↔Branch 간 통신은 되는데 외부만 안 됨
+
+## 가장 유력한 원인
+- HQ에 default route 누락(또는 next-hop 오류)
+- ISP/Internet 방향 라우팅 누락
+- Internet loopback 설정 누락
+
+## 확인 절차
+1) HQ 디폴트 라우트 확인
+- R1_HQ: `show ip route`
+- 기대: `S* 0.0.0.0/0` 존재 
+
+2) ISP 라우팅 확인(내부 대역/디폴트)
+- R3_ISP: `show ip route`
+- 기대: 내부 대역이 HQ 방향으로 정적 라우팅 
+
+3) Internet loopback 확인
+- R4_Internet: `show ip interface brief`
+- 기대: loopback0 8.8.8.8/32 존재 
+
+## 조치
+- HQ에 디폴트 라우트 추가/수정
+- ISP에 내부 대역 정적 경로 추가/수정
+- Internet loopback 설정 확인 및 누락 시 추가
+
+## 재검증
+- HQ/Branch VLAN PC에서 `ping 8.8.8.8` 성공

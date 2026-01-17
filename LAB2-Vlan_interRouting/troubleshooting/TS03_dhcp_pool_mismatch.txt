@@ -1,0 +1,39 @@
+# TS03 - DHCP Pool 네트워크/게이트웨이 불일치로 DHCP 실패
+
+## 증상
+- 특정 VLAN에서 IP를 못 받음(0.0.0.0/169.254.x.x)
+- IP는 받았는데 GW/DNS가 이상하거나 다른 대역으로 할당됨
+
+## 가장 유력한 원인
+- DHCP pool의 network/mask가 실제 VLAN 대역과 불일치
+- default-router가 게이트웨이(.1)와 불일치
+- Branch는 SVI에서 helper를 쓰므로, helper 주소 오타/누락 가능 
+
+## 확인 절차
+[HQ]
+1) DHCP pool 확인
+- `show run | section ip dhcp pool`
+- 기대: 192.168.1.0/24, 2.0/24, 3.0/24로 정확히 구성 
+
+2) 제외 주소 확인
+- `show run | include ip dhcp excluded-address`
+
+[Branch]
+3) Branch 라우터 DHCP pool 확인
+- `show run | section ip dhcp pool`
+- 기대: 192.168.10/20/30 대역 pool 구성 
+
+4) Branch-SW SVI helper 확인
+- `show run interface vlan 10`
+- `show run interface vlan 20`
+- `show run interface vlan 30`
+- 기대: `ip helper-address 192.168.100.1` 존재 
+
+## 조치
+- pool network/mask 수정
+- default-router를 VLAN 게이트웨이(.1)로 수정
+- Branch-SW SVI의 helper 주소를 Branch 라우터 인터페이스 IP로 수정
+
+## 재검증
+- PC DHCP 재요청 후 IP/GW/DNS 정상 수신
+- `show ip dhcp binding`에서 바인딩 확인

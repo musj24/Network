@@ -1,0 +1,30 @@
+# TS01 - Trunk 설정 오류로 VLAN 트래픽 전달 실패
+
+## 증상
+- 특정 VLAN PC가 게이트웨이(.1) ping 실패
+- 다른 VLAN과 통신(Inter-VLAN) 불가
+- DHCP가 특정 VLAN에서만 실패할 수 있음(게이트웨이까지 도달 못 해서)
+
+## 가장 유력한 원인
+- 스위치-라우터(또는 스위치-스위치) 구간이 trunk가 아니거나
+- allowed VLAN 목록에서 필요한 VLAN이 빠짐
+
+## 확인 절차
+1) HQ-SW trunk 확인
+- `show interfaces trunk`
+- 기대: trunk 포트에 VLAN 10/20/30(및 native 99)이 허용됨  
+  (HQ-SW 구성은 native 99 + allowed 10,20,30,99) 
+
+2) Branch 쪽 링크 확인
+- Branch-SW ↔ Branch 라우터 업링크는 L3 포트(no switchport)이므로 trunk 개념이 아님 
+- Branch-SW 내부 PC 포트가 access vlan으로 올바르게 들어갔는지 확인
+  - `show vlan brief`
+
+## 조치
+- trunk 미구성 시: `switchport mode trunk`
+- allowed 누락 시: `switchport trunk allowed vlan 10,20,30,99`
+- access 포트 VLAN 오할당 시: `switchport access vlan <10|20|30>`
+
+## 재검증
+- 해당 VLAN PC → 게이트웨이(.1) ping 성공
+- `show interfaces trunk`에서 상태 정상 확인

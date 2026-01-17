@@ -1,0 +1,27 @@
+# TS02 - Native VLAN 불일치로 인한 통신 문제
+
+## 증상
+- 간헐적인 통신 장애, 예상과 다른 VLAN으로 프레임 유입
+- 특정 VLAN만 이상 동작하거나, DHCP가 불안정하게 보일 수 있음
+
+## 가장 유력한 원인
+- trunk 양단의 native VLAN이 서로 다름
+- 라우터 ROAS native sub-interface 설정과 스위치 native VLAN이 불일치
+
+## 확인 절차
+1) HQ-SW trunk native 확인
+- `show interfaces trunk`
+- 기대: native VLAN 99
+
+2) HQ 라우터 ROAS native 확인
+- `show run interface g0/2.99`
+- 기대: `encapsulation dot1q 99 native` 
+
+## 조치
+- 스위치 trunk: `switchport trunk native vlan 99`
+- 라우터 subif: `encapsulation dot1q 99 native`
+
+
+## 재검증
+- VLAN별 게이트웨이 ping 및 Inter-VLAN ping 정상화
+- `show interfaces trunk`에서 native 99 일치 확인

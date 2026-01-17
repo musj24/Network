@@ -1,0 +1,35 @@
+
+# [0] 라우팅 (디폴트 + Branch VLAN 대역을 Branch-SW로 전달)
+ip route 0.0.0.0 0.0.0.0 192.168.200.1
+ip route 192.168.10.0 255.255.255.0 192.168.100.2
+ip route 192.168.20.0 255.255.255.0 192.168.100.2
+ip route 192.168.30.0 255.255.255.0 192.168.100.2
+
+# [1] DHCP (Branch VLAN별 주소 할당)
+ip dhcp excluded-address 192.168.10.0 192.168.10.10
+ip dhcp excluded-address 192.168.20.0 192.168.20.10
+ip dhcp excluded-address 192.168.30.0 192.168.30.10
+
+ip dhcp pool Branch_vlan10
+ default-router 192.168.10.1
+ dns-server 8.8.8.8
+ network 192.168.10.0 255.255.255.0
+
+ip dhcp pool Branch_vlan20
+ default-router 192.168.20.1
+ dns-server 8.8.8.8
+ network 192.168.20.0 255.255.255.0
+
+ip dhcp pool Branch_vlan30
+ default-router 192.168.30.1
+ dns-server 8.8.8.8
+ network 192.168.30.0 255.255.255.0
+
+# [2] 인터페이스 (HQ/Branch-SW 연결)
+***
+interface g0/0
+ ip address 192.168.200.2 255.255.255.252
+
+
+interface g0/1
+ ip address 192.168.100.1 255.255.255.252

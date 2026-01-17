@@ -1,0 +1,27 @@
+[검증항목]
+- 항목: 서로 다른 VLAN 간 Inter-VLAN Routing 정상 동작 여부
+- 목적: 게이트웨이(ROAS 또는 SVI)가 VLAN 간 라우팅을 정상 수행하는지 확인
+- 기대결과: VLAN10 ↔ VLAN20 ↔ VLAN30 간 ping 성공
+
+[실행]
+1) HQ VLAN10 PC → Branch VLAN20 PC ping
+- PC: HQ_vlan10_1
+- 명령: ping <Branch_vlan20_1 IP>
+
+2) Branch VLAN20 PC → HQ VLAN30 PC ping
+- PC: Branch_vlan20_1
+- 명령: ping <HQ_vlan30_1 IP>
+
+3) Branch VLAN10 PC → HQ VLAN20 PC ping
+- PC: Branch_vlan10_1
+- 명령: ping <HQ_vlan20_1 IP>
+
+[추가 증빙]
+A) HQ 라우터에서 서브인터페이스 up 확인
+- 장비: R1_HQ
+- 명령: show ip interface brief 
+
+B) Branch-SW에서 SVI up 확인
+- 장비: SW2_Branch
+- 명령: show ip interface brief 
+

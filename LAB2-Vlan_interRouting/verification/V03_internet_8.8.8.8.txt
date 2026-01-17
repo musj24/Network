@@ -1,0 +1,17 @@
+[검증항목]
+- 항목: 내부 PC에서 Internet(8.8.8.8) 접근 가능 여부
+- 목적: 내부 라우팅(HQ↔Branch) + HQ 디폴트 + ISP/Internet 경로가 정상인지 확인
+- 기대결과: HQ/Branch 모든 VLAN PC에서 ping 8.8.8.8 성공
+
+
+[실행]
+1) HQ VLAN별 PC에서 ping
+- HQ_vlan10_1: ping 8.8.8.8
+- HQ_vlan20_1: ping 8.8.8.8
+- HQ_vlan30_1: ping 8.8.8.8
+
+2) Branch VLAN별 PC에서 ping
+- Branch_vlan10_1: ping 8.8.8.8
+- Branch_vlan20_1: ping 8.8.8.8
+- Branch_vlan30_1: ping 8.8.8.8
+

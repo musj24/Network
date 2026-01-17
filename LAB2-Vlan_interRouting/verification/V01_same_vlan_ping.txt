@@ -1,0 +1,29 @@
+[검증항목]
+- 항목: 동일 VLAN 내 PC 간 통신 가능 여부
+- 목적: Access 포트 VLAN 할당 및 동일 VLAN 내 L2 통신 정상 여부 확인
+- 기대결과: 같은 VLAN의 PC끼리 ping 성공
+
+[실행]
+1) HQ VLAN10: HQ_vlan10_1 → HQ_vlan10_2
+- PC: HQ_vlan10_1
+- 명령: ping <HQ_vlan10_2 IP>
+
+2) HQ VLAN20: HQ_vlan20_1 → HQ_vlan20_2
+- PC: HQ_vlan20_1
+- 명령: ping <HQ_vlan20_2 IP>
+
+3) HQ VLAN30: HQ_vlan30_1 → HQ_vlan30_2
+- PC: HQ_vlan30_1
+- 명령: ping <HQ_vlan30_2 IP>
+
+4) Branch VLAN10: Branch_vlan10_1 → Branch_vlan10_2
+- PC: Branch_vlan10_1
+- 명령: ping <Branch_vlan10_2 IP>
+
+5) Branch VLAN20: Branch_vlan20_1 → Branch_vlan20_2
+- PC: Branch_vlan20_1
+- 명령: ping <Branch_vlan20_2 IP>
+
+6) Branch VLAN30: Branch_vlan30_1 → Branch_vlan30_2
+- PC: Branch_vlan30_1
+- 명령: ping <Branch_vlan30_2 IP>

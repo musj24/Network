@@ -16,7 +16,8 @@
 - 명령어: show run | section router ospf
 
 
-[참고 증빙(선택)]
+[참고 증빙]
 - ISP에서 OSPF neighbor 확인
 - 장비: R3_ISP
 - 명령어: show ip ospf neighbor
+

@@ -13,7 +13,7 @@
 - 명령어/동작: ping 8.8.8.8
 
 
-[참고 증빙(권장)]
+[참고 증빙]
 A) Branch 라우터에서 Default Route 수신 확인
 - 장비: R2_Branch
 - 명령어: show ip route | include 0.0.0.0
@@ -21,3 +21,4 @@ A) Branch 라우터에서 Default Route 수신 확인
 B) HQ 라우터에서 NAT 변환 엔트리 생성 확인
 - 장비: R1_HQ
 - 명령어: show ip nat translations
+

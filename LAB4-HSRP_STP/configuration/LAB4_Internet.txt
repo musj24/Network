@@ -1,0 +1,20 @@
+# [0] 기본 경로(양방향 ISP로)
+ip route 0.0.0.0 0.0.0.0 203.0.10.1
+ip route 0.0.0.0 0.0.0.0 203.0.30.1 5
+
+# [1] Internet 대체 Loopback (DNS 테스트/외부 대상)
+interface loopback0
+ ip address 8.8.8.8 255.255.255.255
+
+# [2] 인터페이스
+interface g0/0
+ ip address 203.0.10.2 255.255.255.252
+ no shut
+
+interface g0/1
+ ip address 203.0.20.1 255.255.255.252
+ no shut
+
+interface g0/2
+ ip address 203.0.30.2 255.255.255.252
+ no shut

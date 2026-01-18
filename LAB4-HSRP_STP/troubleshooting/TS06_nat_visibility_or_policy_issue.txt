@@ -1,0 +1,60 @@
+##증상
+
+내부에서 외부로 ping/HTTP가 실패
+
+HQ에서 NAT 변환이 안 보이거나, ASA에서 xlate가 비어 보임
+
+경로는 정상인데 “NAT만 안 되는 것처럼” 보임
+
+##유력 원인
+
+HQ PAT에서 inside/outside 지정 또는 ACL 매칭 오류
+
+ASA 라우팅(inside 정적 경로, outside 기본 경로) 문제
+
+PT ASA에서 NAT 가시성(show xlate 등)이 제한적/불안정한 케이스
+
+내부 트래픽이 ASA inside로 기대한 형태로 유입되지 않음(PT 제약 포함)
+
+##확인 절차
+
+1. PC에서 외부 대상 통신 시도
+
+ping <8.8.8.8>
+
+HTTP 접속
+
+2. HQ NAT 확인
+
+show ip nat statistics
+
+show ip nat translations
+
+3. ASA NAT 확인(PT 기준)
+
+show nat
+
+
+4. 경로 확인
+
+HQ/DSW에서 show ip route
+
+ASA에서 inside/outside route 확인
+
+##조치
+
+HQ PAT: inside/outside 지정, NAT ACL(permit 대역) 매칭을 재점검
+
+ASA: inside 정적 경로 및 outside 기본 경로 재점검
+
+PT 가시성 이슈가 의심되면 “show nat hit + show conn + 시뮬레이션 캡처”로 증빙 기준을 고정
+
+외부 통신이 되는데 표기만 이상한 경우, 검증 근거를 README에 명시(PT 제약)
+
+##재검증
+
+PC의 외부 통신 성공 확인
+
+HQ NAT 통계 증가 확인
+
+ASA show nat hit 증가 확인(PT 기준)

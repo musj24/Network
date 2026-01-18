@@ -1,0 +1,51 @@
+##증상
+
+Port-Channel이 down 또는 (I) / (D) 상태, 멤버가 (P)로 묶이지 않음
+
+Trunk native/allowed VLAN 불일치로 특정 VLAN만 통신 불가
+
+STP가 예상과 다르게 차단되거나 루프/불안정 발생
+
+##유력 원인
+
+양단 Port-Channel 멤버 설정 불일치(trunk mode, native, allowed)
+
+LACP 모드 불일치(active/passive 조합 문제)
+
+멤버 포트 속성 불일치(speed/duplex 등, PT에서 제한적이지만 설정 불일치로 bundle 실패 가능)
+
+포트채널 구성 순서 문제(멤버에 먼저 channel-group 후 trunk 설정 등)
+
+##확인 절차
+
+1. EtherChannel 상태 확인
+
+show etherchannel summary
+
+2. 트렁크 상태 확인
+
+show interfaces trunk
+
+show run interface port-channel <id>
+
+show run interface <member-interface>
+
+3. STP 상태 확인(포트채널 기준)
+
+show spanning-tree vlan <10|20|30>
+
+##조치
+
+양단에서 Port-Channel과 멤버 포트의 trunk/native/allowed를 동일하게 정리
+
+LACP 모드를 통일(active 권장)
+
+멤버 포트에 남아있는 불필요 설정 제거 후 포트채널 재구성(필요 시 shut/no shut로 재협상)
+
+##재검증
+
+show etherchannel summary에서 멤버가 (P)로 번들링 확인
+
+show interfaces trunk에서 native/allowed 일치 확인
+
+VLAN별 통신 정상 확인

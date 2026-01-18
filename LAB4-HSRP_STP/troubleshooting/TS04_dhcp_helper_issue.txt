@@ -1,0 +1,55 @@
+##증상
+
+PC가 IP를 못 받음(APIPA/0.0.0.0)
+
+IP는 받았지만 DNS 서버 주소가 비어있거나 다른 값으로 들어옴
+
+일부 VLAN만 DHCP가 됨(특정 VLAN만 실패)
+
+##유력 원인
+
+DSW SVI에 ip helper-address 누락/오타
+
+DHCP 서버 경로 라우팅 문제(서버 VLAN/경로 미학습)
+
+Trunk allowed VLAN 누락으로 DHCP 릴레이 트래픽이 VLAN을 못 통과
+
+DHCP Snooping/DAI가 적용된 경우 trust 포인트 오류로 DHCP 응답 차단
+
+##확인 절차
+
+1. SVI helper 확인
+
+show run interface vlan <10|20|30>
+
+2. VLAN/Trunk 확인
+
+show interfaces trunk
+
+show vlan brief
+
+3. 라우팅 확인(서버 대역/경로)
+
+show ip route
+
+Snooping 상태/바인딩 확인
+
+show ip dhcp snooping
+
+show ip dhcp snooping binding
+
+##조치
+
+VLAN10/20/30 SVI에 ip helper-address를 DHCP 서버 IP로 정확히 통일
+
+서버 VLAN/서버 대역으로의 라우팅 경로 확보(OSPF/Static/직결 여부 확인)
+
+Trunk allowed VLAN에 필요한 VLAN을 포함시키고 양단 일치
+
+snooping/DAI 적용 시 uplink를 trust로 설정하고, 단계적으로 적용하여 원인 분리
+
+##재검증
+
+PC에서 정상 IP/GW/DNS 수신 확인
+
+동일 VLAN 및 타 VLAN 통신 정상 확인

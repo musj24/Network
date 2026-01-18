@@ -1,0 +1,55 @@
+##증상
+
+VLAN10/20/30 VIP가 ping 응답하지 않음
+
+DSW1/DSW2 모두 Active가 되거나, 모두 Standby/Init 상태
+
+단말의 Default GW가 VIP가 아니라 물리 SVI로 잡힘 또는 게이트웨이 장애
+
+##유력 원인
+
+SVI 상태 down/down (VLAN 미생성, trunk 미확장, SVI shutdown)
+
+HSRP 그룹/VIP 불일치(양쪽 설정 상이)
+
+priority/preempt 설정 누락 또는 의도와 반대로 적용
+
+STP 차단/Port-Channel 장애로 VLAN이 한쪽으로만 살아있는 상황
+
+##확인 절차
+
+1. HSRP 상태 확인
+
+show standby brief
+
+2. SVI 상태 확인
+
+show ip interface brief
+
+show vlan brief
+
+3. Trunk/VLAN 확장 확인
+
+show interfaces trunk
+
+show etherchannel summary
+
+4. 단말 측 게이트웨이 확인
+
+PC IP 설정 화면 또는 ipconfig
+
+##조치
+
+VLAN/Trunk/Port-Channel 정상화 후 SVI up/up 확보
+
+양쪽 DSW의 HSRP 그룹 번호와 VIP를 동일하게 맞춤
+
+priority/preempt를 설계 의도대로 정리(Active/Standby 고정)
+
+STP Root/차단 포트로 인해 특정 DSW로만 트래픽이 몰리는 경우 STP/EC 구성을 재점검
+
+##재검증
+
+show standby brief에서 Active/Standby 정상 확인
+
+PC에서 VIP ping 성공 확인

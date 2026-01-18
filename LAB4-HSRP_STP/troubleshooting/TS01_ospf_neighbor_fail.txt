@@ -1,0 +1,55 @@
+##증상
+
+DSW-HQ 또는 DSW-DSW 구간에서 OSPF neighbor가 FULL이 되지 않음
+
+내부 VLAN 경로(OSPF route)가 학습되지 않음
+
+장애 시 우회가 되지 않음(경로 수렴 실패)
+
+##유력 원인
+
+OSPF 활성화 누락(interface에 ospf 미적용 또는 network statement 누락)
+
+L3 링크 구간에 switchport 설정 잔존(no switchport 미적용)
+
+passive-interface 처리 오류(필요 인터페이스가 passive 상태)
+
+IP/마스크 불일치로 P2P 링크 인접 실패
+
+##확인 절차
+
+1. Neighbor 상태 확인
+
+show ip ospf neighbor
+
+2. OSPF 설정 확인
+
+show run | sec router ospf
+
+show run interface <link-interface>
+
+3. L3 링크 상태 확인
+
+show ip interface brief
+
+4. 라우팅 테이블 확인
+
+show ip route ospf
+
+##조치
+
+DSW-HQ, DSW-DSW 링크가 L3인지(no switchport) 확인 및 수정
+
+OSPF Area 및 network statement를 링크/내부 SVI 대역과 일치시킴
+
+passive-interface default 사용 시, 인접 형성 필요한 링크만 no passive-interface 처리
+
+링크 IP/마스크 불일치 수정
+
+##재검증
+
+show ip ospf neighbor에서 FULL 확인
+
+show ip route ospf에서 학습 경로 확인
+
+장애 시나리오에서 경로 수렴/우회 동작 확인

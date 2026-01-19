@@ -1,0 +1,28 @@
+# [0] DNS / Default Route
+ip name-server 192.168.50.3
+ip route 0.0.0.0 0.0.0.0 192.168.60.6
+
+# [1] NAT (Pre-PAT for PT limitation)
+access-list 1 permit 192.168.0.0 0.0.255.255
+ip nat inside source list 1 interface g0/1 overload
+
+# [2] Interfaces
+interface g0/1
+ ip address 192.168.60.1 255.255.255.248
+ ip nat outside
+ no shut
+
+interface g0/0
+ ip address 192.168.200.1 255.255.255.252
+ no shut
+
+interface g0/2
+ ip address 192.168.100.1 255.255.255.252
+ ip nat inside
+ ip ospf 1 area 0
+ no shut
+
+# [3] OSPF
+router ospf 1
+ router-id 3.3.3.3
+ default-information originate

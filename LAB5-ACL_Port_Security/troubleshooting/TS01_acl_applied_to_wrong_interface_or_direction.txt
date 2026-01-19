@@ -1,0 +1,50 @@
+[증상]
+
+서버 접근 제어가 의도와 다르게 동작(허용돼야 할 VLAN이 차단되거나, 차단돼야 할 VLAN이 허용됨)
+
+VLAN10 Internet 차단/허용이 반대로 동작
+
+특정 VLAN만 통신이 전반적으로 이상해짐
+
+[유력 원인]
+
+ACL을 SVI가 아닌 다른 인터페이스에 적용
+
+in/out 방향을 반대로 적용
+
+DSW1/DSW2 중 한쪽에만 적용되어 HSRP Active 전환 시 정책이 바뀜
+
+[확인 절차]
+
+1. ACL 적용 인터페이스/방향 확인
+
+장비: DSW1
+
+명령: show run interface vlan 10
+
+명령: show run interface vlan 20
+
+명령: show run interface vlan 30
+
+명령: show run interface vlan 50
+
+장비: DSW2도 동일 확인
+
+2. ACL 이름/정책 확인
+
+명령: show access-lists
+
+
+[조치]
+
+README 설계 기준대로 SVI에 적용 위치를 통일
+
+서버 접근 ACL은 VLAN50 경계에 적용(권장: out 방향)
+
+Internet 접근 ACL은 사용자 VLAN SVI에 적용(in 방향)
+
+[재검증]
+
+VLAN별 서버 접근/Internet 접근 검증 항목(V01~) 재수행
+
+show access-lists에서 hit count 증가 확인

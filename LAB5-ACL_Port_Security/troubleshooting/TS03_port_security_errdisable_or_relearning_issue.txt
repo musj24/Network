@@ -1,0 +1,43 @@
+[증상]
+
+단말 교체 후 링크가 안 올라오고 포트가 err-disable 상태
+
+포트가 shutdown 되어 통신 불가
+
+“어제는 됐는데 오늘은 안 됨”(PC 변경/재배선 후)
+
+[유력 원인]
+
+sticky MAC이 기존 단말 MAC으로 고정되어 새 단말이 위반 처리됨
+
+violation 모드가 shutdown이라 즉시 err-disable 발생
+
+복구 절차(shut/no shut 또는 recovery)가 미수행
+
+[확인 절차]
+
+1. 포트 보안 상태 확인
+
+show port-security interface <port>
+
+show port-security address
+
+2. 포트 상태 확인
+
+show interfaces status
+
+show interface <port>
+
+[조치]
+
+기존 sticky MAC 제거 후 재학습(포트 설정 내 또는 clear)
+
+필요 시 포트 shut/no shut로 복구
+
+운영 관점에서는 단말 교체 절차를 README에 명시(예: clear 후 재학습)
+
+[재검증]
+
+새 단말 연결 후 정상 링크 up/up 및 통신 확인
+
+port-security violation 카운터가 증가하지 않는지 확인

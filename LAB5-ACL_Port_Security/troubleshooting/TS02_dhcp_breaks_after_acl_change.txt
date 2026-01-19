@@ -1,0 +1,51 @@
+[증상]
+
+PC가 DHCP로 IP를 못 받음(0.0.0.0 또는 APIPA)
+
+특정 VLAN만 DHCP 실패
+
+ACL 변경 직후부터 DHCP가 즉시 장애
+
+[유력 원인]
+
+사용자 VLAN SVI(in)에 적용된 ACL이 DHCP 브로드캐스트/릴레이 트래픽을 차단
+
+DHCP 예외(UDP 68/67)가 ACL에 없음
+
+DHCP Snooping trust 포인트 누락으로 Offer/Ack 드롭
+
+[확인 절차]
+
+1. DHCP 예외 존재 여부 확인
+
+show access-lists 
+
+(필수 확인) permit udp any eq 68 any eq 67 / permit udp any eq 67 any eq 68
+
+helper-address 확인
+
+show run interface vlan 10
+
+show run interface vlan 20
+
+show run interface vlan 30
+
+snooping 상태 확인
+
+show ip dhcp snooping
+
+show ip dhcp snooping binding
+
+[조치]
+
+Internet ACL 상단에 DHCP 예외 2줄 추가(포트 기반)
+
+helper-address를 DHCP 서버 IP로 정합성 있게 통일
+
+snooping 사용 시 uplink/port-channel 멤버에 trust 적용
+
+[재검증]
+
+PC에서 DHCP 재시도 후 IP/GW/DNS 수신 확인
+
+show access-lists에서 DHCP permit 라인 hit 증가 확인

@@ -1,0 +1,27 @@
+[검증항목]
+
+항목: VLAN 10 -> Server VLAN 접근 성공 여부
+
+목적: 서버 접근 정책에서 VLAN10만 서버 VLAN(50) 전체 접근이 허용되는지 확인
+
+기대결과: VLAN10 PC에서 서버 VLAN의 서버(<Server IP>)로 ping 및 (가능 시) HTTP/DNS 접근 성공
+
+[구성 참고]
+
+DSW1 Server VLAN 정책 ACL이 VLAN50 SVI에 적용됨(방향: out 기준 권장)
+
+Allow_Intra_OUT 내 VLAN10 -> 192.168.50.0/대역 permit 확인
+
+[실행]
+
+1. VLAN10 PC에서 서버로 ping
+
+PC: <VLAN10_PC>
+
+명령: ping <192.168.50.3>
+
+2. HTTP 확인(서버가 웹인 경우)
+
+PC: <VLAN10_PC>
+
+방법: Web Browser -> http://<web.intra.local>

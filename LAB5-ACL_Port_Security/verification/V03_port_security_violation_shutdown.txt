@@ -1,0 +1,47 @@
+[검증항목]
+
+항목: Port-Security 위반 발생 시 포트 Shutdown 동작 확인
+
+목적: Access 포트에 단일 MAC(sticky) 정책이 적용되고, 위반 시 err-disable/shutdown 되는지 확인
+
+기대결과:
+
+동일 포트에 다른 단말 연결 시 violation 발생
+
+해당 포트가 err-disable/shutdown 상태로 전환
+
+
+[구성 참고]
+
+ACC1/ACC2 단말 포트: port-security maximum 1 / sticky / violation shutdown
+
+PortFast/BPDU Guard가 단말 포트에 적용됨
+
+[실행]
+
+1. 정상 상태에서 sticky MAC 학습 확인
+
+장비: <ACC1 또는 ACC2>
+
+명령: show port-security interface <access-port>
+
+
+2. 위반 유도(다른 PC를 같은 포트에 연결 또는 MAC 변경)
+
+조치: <기존 단말 분리 후 다른 단말 연결>
+
+3. 위반 결과 확인
+
+장비: <ACC1 또는 ACC2>
+
+명령: show port-security interface <access-port>
+
+명령: show interfaces status (또는 show interface <port>)
+
+기대: err-disabled 또는 secure-shutdown 상태
+
+4. 복구 절차 확인
+
+장비: <ACC1 또는 ACC2>
+
+조치: shutdown / no shutdown 

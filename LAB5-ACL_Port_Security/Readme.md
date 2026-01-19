@@ -73,7 +73,7 @@
 #### 설계 방식
 
 * **출발지 기준 정책**
-* VLAN 10 SVI에 ACL을 **in 방향**으로 적용
+* VLAN 10,20,30 SVI에 ACL을 **in 방향**으로 적용
 * RFC1918 대역은 허용, 그 외 목적지는 차단
 
 #### 설계 의도
@@ -126,7 +126,6 @@ Root Guard를 통해 STP 보호 의도를 반영하였다.
 * 서버 접근 제어 ACL이 서버 VLAN SVI 기준으로 적용되었는지 확인
 * Internet 접근 제어 ACL이 출발지 VLAN SVI 기준(in 방향)으로 적용되었는지 확인
 * ACL 항목 순서로 인한 의도치 않은 permit/deny 여부 점검
-* `permit ip any any`로 정책이 무력화되지 않았는지 확인
 * ACL hit count 증가 여부 확인
 
 ---

@@ -171,7 +171,7 @@ Root Guard를 통해 STP 보호 의도를 반영하였다.
 * VLAN 10 → Internet 접근 차단 여부
 * VLAN 20 / VLAN 30 → Internet 접근 허용 여부
 * Port-Security 위반 발생 시 포트 Shutdown 동작 확인
-* Root Guard 트리거 시 STP 상태 변화 확인
+
 
 ---
 

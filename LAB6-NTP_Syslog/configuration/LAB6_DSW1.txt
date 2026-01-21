@@ -116,6 +116,10 @@ interface range g1/0/23 - 24
  switchport mode access
  switchport access vlan 50
 
+interface g1/0/5
+switchport mode access
+switchport access vlan 50
+
 # [9] OSPF
 router ospf 1
  router-id 1.1.1.1

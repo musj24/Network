@@ -1,0 +1,144 @@
+# [0] L3 스위치 기본 + STP Root(Primary)
+ip routing
+spanning-tree mode rapid-pvst
+spanning-tree vlan 1-4094 root primary
+
+# [1] 기본/백업 라우팅(Backup Default, AD 200)
+ip route 0.0.0.0 0.0.0.0 192.168.10.2 200
+
+# [2] DHCP Snooping 활성
+ip dhcp snooping
+
+# [3] ACL 정의(Distribution 정책)
+ip access-list extended Allow_Intra_OUT
+permit ip 192.168.1.0 0.0.0.255 192.168.50.0 0.0.0.255
+permit ip 192.168.2.0 0.0.0.255 host 192.168.50.2
+permit ip 192.168.3.0 0.0.0.255 host 192.168.50.2
+
+
+ip access-list extended Allow_Ext_IN
+permit udp any eq 68 any eq 67
+permit udp any eq 67 any eq 68
+permit ip any 10.0.0.0 0.255.255.255
+permit ip any 172.16.0.0 0.15.0.0
+permit ip any 192.168.0.0 0.0.255.255
+permit ip 192.168.2.0 0.0.0.255 any
+permit ip 192.168.3.0 0.0.0.255 any
+
+# [4] VLAN 정의
+vlan 10
+ name HQ_10
+vlan 20
+ name HQ_20
+vlan 30
+ name HQ_30
+vlan 50
+ name Servers
+vlan 99
+ name native
+
+# [5] SVI + HSRP + DHCP Relay + ACL 적용
+interface vlan 10
+ ip address 192.168.1.2 255.255.255.0
+ ip helper-address 192.168.50.2
+ standby 10 ip 192.168.1.1
+ standby 10 priority 110
+ standby 10 preempt
+ ip access-group Allow_Ext_IN in
+
+interface vlan 20
+ ip address 192.168.2.2 255.255.255.0
+ ip helper-address 192.168.50.2
+ standby 20 ip 192.168.2.1
+ standby 20 priority 110
+ standby 20 preempt
+ ip access-group Allow_Ext_IN in
+
+
+interface vlan 30
+ ip address 192.168.3.2 255.255.255.0
+ ip helper-address 192.168.50.2
+ standby 30 ip 192.168.3.1
+ standby 30 priority 110
+ standby 30 preempt
+ ip access-group Allow_Ext_IN in
+
+
+interface vlan 50
+ ip address 192.168.50.1 255.255.255.248
+ ip access-group Allow_Intra_OUT out
+
+# [6] L3 링크(DSW-DSW, DSW-HQ)
+interface g1/0/1
+ no switchport
+ ip address 192.168.10.1 255.255.255.252
+
+interface g1/0/2
+ no switchport
+ ip address 192.168.100.2 255.255.255.252
+ ip ospf 1 area 0
+
+# [7] Uplink EtherChannel(Trunk) + Root Guard + Snooping/DAI Trust
+interface port-channel 1
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 10,20,30,50,99
+ spanning-tree guard root
+
+interface range g1/0/3 - 4
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 10,20,30,50,99
+ ip dhcp snooping vlan 10,20,30,50,99
+ ip arp inspection vlan 10,20,30,50,99
+ ip dhcp snooping trust
+ ip arp inspection trust
+ channel-group 1 mode active
+
+interface port-channel 2
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 10,20,30,50,99
+ spanning-tree guard root
+
+interface range g1/0/7 - 8
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 10,20,30,50,99
+ ip dhcp snooping vlan 10,20,30,50,99
+ ip arp inspection vlan 10,20,30,50,99
+ ip dhcp snooping trust
+ ip arp inspection trust
+ channel-group 2 mode active
+
+# [8] Server Access Port (VLAN 50)
+interface range g1/0/23 - 24
+ switchport mode access
+ switchport access vlan 50
+
+# [9] OSPF
+router ospf 1
+ router-id 1.1.1.1
+ network 192.168.1.0 0.0.0.255 area 0
+ network 192.168.2.0 0.0.0.255 area 0
+ network 192.168.3.0 0.0.0.255 area 0
+ network 192.168.50.0 0.0.0.255 area 0
+ network 192.168.10.0 0.0.0.3 area 0
+ passive-interface default
+ no passive-interface g1/0/1
+ no passive-interface g1/0/2
+
+# [10] int loopback (관리용)
+int loopback 0
+ip address 10.255.1.1 255.255.255.255
+
+# [11] Syslog
+service timastamps log datetime msec
+logging on
+logging host 192.168.50.4
+logging trap debug
+
+# [12] NTP
+ntp server 192.168.50.4
+clock timezone KST 9
+

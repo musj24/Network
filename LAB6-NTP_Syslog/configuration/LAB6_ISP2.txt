@@ -1,0 +1,15 @@
+# [0] Default Route
+ip route 0.0.0.0 0.0.0.0 203.0.30.2
+
+# [1] Interfaces
+interface g0/0
+ ip address 203.0.60.2 255.255.255.248
+ no shut
+
+interface g0/1
+ ip address 203.0.50.2 255.255.255.252
+ no shut
+
+interface g0/2
+ ip address 203.0.30.1 255.255.255.252
+ no shut

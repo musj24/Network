@@ -11,12 +11,22 @@ ip dhcp snooping
 
 # [3] ACL 정의(Distribution 정책)
 ip access-list extended Allow_Intra_OUT
+
+permit udp any host 192.168.50.4 eq 123
+permit udp host 192.168.50.4 any eq 123
+permit udp any host 192.168.50.4 eq 514
+permit udp host 192.168.50.4 any eq 514
 permit ip 192.168.1.0 0.0.0.255 192.168.50.0 0.0.0.255
 permit ip 192.168.2.0 0.0.0.255 host 192.168.50.2
 permit ip 192.168.3.0 0.0.0.255 host 192.168.50.2
+permit ip 192.168.2.0 0.0.0.255 host 192.168.50.4
+permit ip 192.168.3.0 0.0.0.255 host 192.168.50.4
+
 
 
 ip access-list extended Allow_Ext_IN
+
+
 permit udp any eq 68 any eq 67
 permit udp any eq 67 any eq 68
 permit ip any 10.0.0.0 0.255.255.255
@@ -24,6 +34,8 @@ permit ip any 172.16.0.0 0.15.0.0
 permit ip any 192.168.0.0 0.0.255.255
 permit ip 192.168.2.0 0.0.0.255 any
 permit ip 192.168.3.0 0.0.0.255 any
+
+
 
 # [4] VLAN 정의
 vlan 10
@@ -67,6 +79,14 @@ interface vlan 30
 interface vlan 50
  ip address 192.168.50.1 255.255.255.248
  ip access-group Allow_Intra_OUT out
+
+interface vlan 99
+ip address 192.168.99.10 255.255.255.0
+standby 99 ip 192.168.99.254
+standby 99 priority 110
+standby 99 preempt
+
+
 
 # [6] L3 링크(DSW-DSW, DSW-HQ)
 interface g1/0/1

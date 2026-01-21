@@ -92,6 +92,13 @@ interface vlan 30
  standby 30 preempt
 ip access-group Allow_Ext_IN in
 
+interface vlan 99
+ip address 192.168.99.11 255.255.255.0
+standby 99 ip 192.168.99.254
+standby 99 priority 100
+
+
+
 # [8] OSPF
 router ospf 1
  router-id 2.2.2.2

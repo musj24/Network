@@ -1,0 +1,77 @@
+[문제상황]
+
+증상: ACC(Access Switch)에서 NTP/Syslog 서버(192.168.50.4)로 통신이 불가하거나, 서버 기능이 동작하지 않음
+
+영향: Access Layer 장비 운영 가시성(NTP/Syslog)이 확보되지 않음
+
+[원인 후보]
+
+ACC가 L2 스위치로 라우팅 불가 → 관리 SVI 및 default-gateway 누락
+
+관리 VLAN(예: VLAN99)이 트렁크에서 허용되지 않아 SVI가 down/down
+
+관리 대역이 서버 VLAN 접근 제어 ACL 허용 대상이 아님(운영 트래픽 차단)
+
+[확인]
+
+1. ACC 관리 SVI 상태 확인
+
+장비: ACC1/ACC2
+
+명령: show ip interface brief
+
+기대: Vlan<관리VLAN> up/up
+
+2. ACC default-gateway 확인(L2 스위치 필수)
+
+장비: ACC1/ACC2
+
+명령: show run | include default-gateway
+
+기대: ip default-gateway <관리VLAN 게이트웨이(HSRP VIP 또는 DSW SVI)> 설정 존재
+
+3. 트렁크에서 VLAN 허용 확인
+
+장비: ACC 및 DSW(포트채널)
+
+명령: show interfaces trunk
+
+명령: show etherchannel summary
+
+기대: 관리 VLAN(예: VLAN99)이 trunk allowed 및 forwarding 상태
+
+4. 서버 도달성 확인
+
+장비: ACC
+
+명령: ping 192.168.50.4
+
+기대: ping 성공(실패 시 게이트웨이/트렁크/ACL 점검)
+
+[해결]
+
+관리 VLAN99 구성(권장)
+
+DSW1/DSW2에 interface vlan 99 + HSRP VIP 구성
+
+ACC에 interface vlan 99 관리 IP 부여
+
+ACC에 ip default-gateway <VLAN99 VIP> 설정
+
+트렁크 허용 VLAN에 관리 VLAN 추가
+
+포트채널 및 물리 인터페이스에 switchport trunk allowed vlan add 99
+
+ACL에 운영 트래픽 예외 추가
+
+관리 대역(192.168.99.0/24 등)에서 192.168.50.4로 UDP 123/514 허용
+
+[재검증]
+
+ACC: show ip interface brief (SVI up/up)
+
+ACC: ping 192.168.50.4 성공
+
+ACC: show ntp status / show ntp associations
+
+Syslog: 서버에서 ACC 이벤트 수신 여부(PT 제약 시 DSW/HQ 중심으로 검증)

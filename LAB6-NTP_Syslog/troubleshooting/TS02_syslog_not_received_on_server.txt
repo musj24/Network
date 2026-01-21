@@ -1,0 +1,83 @@
+[문제상황]
+
+증상: 장비에서 logging host 192.168.50.4를 설정했으나 Syslog 서버에서 로그가 수신되지 않음
+
+영향: 링크 다운/업, 라우팅 변화 등 이벤트에 대한 중앙 가시성 상실
+
+[원인 후보]
+
+Syslog 서버 서비스 비활성 또는 서버 설정 문제
+
+장비에서 Syslog 대상 설정(logging host) 누락/오타
+
+ACL로 인해 UDP 514 트래픽 차단(서버 VLAN 정책/기존 LAB5 ACL)
+
+Packet Tracer 환경에서 L2 Access Switch의 Syslog 전달 제한(이벤트 전달/표시 불안정)
+
+테스트 이벤트가 발생하지 않아 서버에 로그가 생성되지 않음
+
+[확인]
+
+1. Syslog 서버 서비스 상태 확인
+
+장비: Syslog Server(192.168.50.4)
+
+방법: PT Server -> Services -> SYSLOG 활성화 및 로그 수신 화면 확인
+
+2. 장비의 Syslog 설정 확인
+
+장비: DSW/HQ/ACC
+
+명령: show logging
+
+기대: logging host 192.168.50.4 설정 존재
+
+3. 장비 로컬 로그 생성 확인
+
+장비: DSW/HQ
+
+명령: show logging
+
+기대: LINK/OSPF 등 로컬 로그가 생성됨
+
+4. ACL 히트카운트 확인(UDP 514)
+
+장비: DSW(ACL 적용 장비)
+
+명령: show access-lists Allow_Intra_OUT
+
+명령: show access-lists Allow_Ext_IN
+
+기대: Syslog 전송/이벤트 발생 후 permit 라인 match 증가
+
+[해결]
+
+1. 서버 측 문제
+
+Syslog 서비스 활성화 및 수신 화면에서 로그 확인
+
+2. 장비 설정 문제
+
+logging host 192.168.50.4 재확인 및 적용
+
+3. ACL 차단 문제
+
+서버 VLAN 경계 정책에 Syslog 예외 추가
+
+[재검증]
+
+이벤트 강제 발생(링크 down/up)
+
+장비: DSW 또는 HQ
+
+명령: interface <IF>
+
+명령: shutdown / no shutdown
+
+기대: 로컬 로그 생성 및 서버 수신 로그 생성
+
+서버 수신 확인
+
+장비: Syslog Server(192.168.50.4)
+
+방법: SYSLOG 로그 목록에서 이벤트 확인

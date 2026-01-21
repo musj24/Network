@@ -1,0 +1,66 @@
+[문제상황]
+
+증상: 일부 장비에서 show ntp status가 unsynchronized로 유지되며, show ntp associations에서 reach 값이 0에서 증가하지 않음
+
+영향: 장비 간 시간 정합성이 깨져 Syslog 타임스탬프/이벤트 분석 신뢰도 저하
+
+[원인 후보]
+
+NTP 서버(192.168.50.4)로의 L3 도달성 문제(라우팅/게이트웨이 누락)
+
+ACL(서버 VLAN 정책/기존 LAB5 ACL)로 인해 UDP 123 트래픽 차단
+
+장비 시간이 과도하게 틀어져 동기화가 지연/실패(연/월/일 단위 오차)
+
+[확인]
+
+1. NTP 서버 도달성 확인
+
+장비: 문제 발생 장비(DSW/HQ/ACC)
+
+명령: ping 192.168.50.4
+
+기대: ping 성공(실패 시 경로/정책 문제 우선)
+
+2. NTP 동기화/연결 상태 확인
+
+장비: 문제 발생 장비
+
+명령: show ntp status
+
+명령: show ntp associations
+
+기대: associations에 192.168.50.4가 보이며 reach 값이 0이 아닌 값으로 증가
+
+3. ACL 히트카운트 확인(정책에 의해 드롭되는지 확인)
+
+장비: DSW(ACL 적용 장비)
+
+명령: show access-list
+
+명령: show access-list
+
+기대: NTP 시도 시 관련 permit 라인의 match 증가(증가가 없으면 매칭 불가/차단 가능)
+
+
+[해결]
+
+1. 경로 문제일 경우
+
+ACC(L2)라면 관리 SVI + ip default-gateway 구성(관리 VLAN을 통한 L3 접근 확보)
+
+DSW/HQ는 라우팅/경로 확인(OSPF/정적경로/기본경로)
+
+2. ACL 차단일 경우(운영 트래픽 예외)
+
+서버 VLAN 경계 정책(Allow_Intra_OUT 등)에 NTP 예외 추가
+
+[재검증]
+
+장비: 문제 발생 장비
+
+명령: show ntp associations (reach 증가 확인)
+
+명령: show ntp status (synchronized 확인)
+
+서버: NTP 서비스 활성/동작 확인(PT Server 서비스 화면)

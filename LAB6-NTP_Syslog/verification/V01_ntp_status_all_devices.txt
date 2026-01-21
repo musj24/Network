@@ -1,0 +1,59 @@
+[검증항목]
+
+항목: 모든 네트워크 장비에서 NTP 동기화 상태(show ntp status) 확인
+
+목적: 중앙 NTP 서버(192.168.50.4)를 기준으로 장비 시간이 동기화되는지 확인하여 로그 타임스탬프 정합성 확보
+
+기대결과:
+
+DSW/HQ 등 L3 장비에서 show ntp status가 synchronized 상태로 표시
+
+NTP server(192.168.50.4)가 peer/association에 나타남(가능 시)
+
+[구성 참고]
+
+NTP Server: 192.168.50.4
+
+각 장비에 ntp server 192.168.50.4 구성
+
+PT 제약: ntp source-interface 미사용(README 전제)
+
+[실행]
+
+1. DSW1에서 NTP 상태 확인
+
+장비: DSW1
+
+명령: show ntp status
+
+
+2. DSW2에서 NTP 상태 확인
+
+장비: DSW2
+
+명령: show ntp status
+
+
+3. HQ1에서 NTP 상태 확인
+
+장비: HQ1
+
+명령: show ntp status
+
+
+4. HQ2에서 NTP 상태 확인
+
+장비: HQ2
+
+명령: show ntp status
+
+
+5. ACC1/ACC2에서 NTP 상태 확인
+
+장비: ACC1
+
+명령: show ntp status
+
+장비: ACC2
+
+명령: show ntp status

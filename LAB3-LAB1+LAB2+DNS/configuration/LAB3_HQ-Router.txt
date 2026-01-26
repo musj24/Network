@@ -15,35 +15,42 @@ interface g0/2.10
  encapsulation dot1q 10
  ip address 192.168.1.1 255.255.255.0
  ip helper-address 192.168.50.3
+ip nat inside
+
 
 interface g0/2.20
  encapsulation dot1q 20
  ip address 192.168.2.1 255.255.255.0
  ip helper-address 192.168.50.3
+ip nat inside
 
 
 interface g0/2.30
  encapsulation dot1q 30
  ip address 192.168.3.1 255.255.255.0
  ip helper-address 192.168.50.3
+ip nat inside
 
 
 interface g0/2.99
  encapsulation dot1q 99 native
  ip address 192.168.99.1 255.255.255.0
  ip helper-address 192.168.50.3
+ip nat inside
 
 
 ! --- HQ <-> ASA(Inside) ---
 interface g0/1
  ip address 192.168.60.1 255.255.255.252
- no shut
+ip nat outside
+
 
 
 ! --- HQ <-> Branch ---
 interface g0/0
  ip address 192.168.200.1 255.255.255.252
- no shut
+ip nat inside
+
 
 
 # [3] 라우팅(OSPF)
@@ -56,3 +63,10 @@ router ospf 1
  network 192.168.60.0 0.0.0.3 area 0
  network 192.168.200.0 0.0.0.3 area 0
  passive-interface g0/1
+
+# [4] PAT 설정
+access-list 1 permit 192.168.0.0 0.0.255.255
+ip nat inside source list 1 int g0/1 overload
+
+
+

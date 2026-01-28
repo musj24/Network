@@ -17,4 +17,4 @@ HQ–Branch–ISP 구조를 기반으로, 라우팅/이중화/보안/운영 요�
 - **LAB4 – HSRP / STP**
 - **LAB5 – ACL / Port-Security**
 - **LAB6 – NTP / Syslog**
-- **LAB7 – SSH (예정)
+- **LAB7 – SSH (예정)**

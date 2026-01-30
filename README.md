@@ -8,7 +8,7 @@ HQ–Branch–ISP 구조를 기반으로, 라우팅/이중화/보안/운영 요�
 - Campus: VLAN, Inter-VLAN Routing, STP, EtherChannel
 - Redundancy: HSRP, STP Root design
 - Security: ACL, Port-Security (DHCP Snooping/DAI 등은 해당 LAB 포함 시)
-- Operations: Syslog, NTP, SSH (추가 예정)
+- Operations: Syslog, NTP, SSH 
 
 ## Labs
 - **LAB1 – OSPF / NAT(PAT·Static) / DHCP Relay 기본 구성**
@@ -17,4 +17,4 @@ HQ–Branch–ISP 구조를 기반으로, 라우팅/이중화/보안/운영 요�
 - **LAB4 – HSRP / STP**
 - **LAB5 – ACL / Port-Security**
 - **LAB6 – NTP / Syslog**
-- **LAB7 – SSH (진행중)**
+- **LAB7 – SSH**

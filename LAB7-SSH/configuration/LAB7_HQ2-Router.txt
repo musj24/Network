@@ -1,0 +1,59 @@
+# [0] DNS / Default Route
+ip name-server 192.168.50.3
+ip route 0.0.0.0 0.0.0.0 192.168.60.6
+
+# [1] NAT (Pre-PAT for PT limitation)
+access-list 1 permit 192.168.0.0 0.0.255.255
+ip nat inside source list 1 interface g0/1 overload
+
+# [2] Interfaces
+interface g0/0
+ ip address 192.168.200.2 255.255.255.252
+ no shut
+
+interface g0/1
+ ip address 192.168.60.2 255.255.255.248
+ ip nat outside
+ no shut
+
+interface g0/2
+ ip address 192.168.150.1 255.255.255.252
+ ip nat inside
+ ip ospf 1 area 0
+ no shut
+
+# [3] OSPF
+router ospf 1
+ router-id 4.4.4.4
+network 10.255.0.0 0.0.255.255 area 0
+ network 192.168.200.0 0.0.0.3 area 0
+
+# [4] int loopback (관리용)
+
+interface loopback0
+ip address 10.255.0.2 255.255.255.255
+
+# [5] Syslog
+
+service timastamps log datetime msec
+logging on
+logging host 192.168.50.4
+logging trap debug
+
+
+# [6] NTP
+
+ntp server 192.168.50.4
+clock timezone KST 9
+
+
+#[7] SSH
+ip domain-name local.intra
+crypto key generate rsa
+ip ssh version 2
+access-list 10 permit host 192.168.50.5
+
+
+line vty 0 4
+transport input ssh
+access-class 10 in

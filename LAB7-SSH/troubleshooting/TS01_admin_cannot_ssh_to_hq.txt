@@ -1,0 +1,77 @@
+[문제상황]
+
+증상: Admin PC(192.168.50.5)에서 HQ1/HQ2로 SSH 접속이 실패
+
+[원인 후보]
+
+Admin PC → HQ 라우터 간 L3 경로 문제(라우팅/OSPF)
+
+HQ 라우터에서 SSH 기능 비활성(도메인/키 미생성)
+
+VTY 설정 문제(transport input ssh 누락, access-class 미적용/오적용)
+
+ACL 10이 올바르게 작성되지 않음(permit host 오타/다른 ACL 적용)
+
+Admin PC의 실제 소스 IP가 192.168.50.5가 아님(정적 설정 오류)
+
+[확인]
+
+1. Admin PC IP 확인
+
+장비: Admin PC
+
+확인: IP가 192.168.50.5인지(정상 소스 확인)
+
+2. 경로/도달성 확인
+
+장비: Admin PC
+
+명령: ping <10.255.0.1> / ping <10.255.0.2>
+
+기대: ping 성공(실패 시 라우팅/정책 우선)
+
+3. HQ 라우터 SSH 상태 확인
+
+장비: HQ1/HQ2
+
+명령: show ip ssh
+
+기대: SSH Enabled, Version 2
+
+4. VTY 설정 확인
+
+장비: HQ1/HQ2
+
+명령: show run | section line vty
+
+기대: transport input ssh, access-class 10 in 존재
+
+5. ACL 10 확인
+
+장비: HQ1/HQ2
+
+명령: show access-lists 10
+
+기대: permit host 192.168.50.5 존재
+
+[해결]
+
+1. 경로 문제일 경우
+
+라우팅 및 인터페이스 상태 복구 후 재시도
+
+2. SSH/VTY 설정 문제일 경우
+
+도메인 설정 + RSA 키 생성 + ip ssh version 2 적용
+
+VTY에 transport input ssh 및 access-class 10 in 재적용
+
+3. ACL 문제일 경우
+
+ACL 10을 permit host 192.168.50.5로 재정의
+
+[재검증]
+
+Admin PC에서 HQ1/HQ2 SSH 재접속
+
+HQ 라우터에서 show ssh, show users로 세션 확인

@@ -1,0 +1,35 @@
+[검증항목]
+
+항목: Admin PC(192.168.50.5)에서 HQ2 라우터로 SSH 접속 성공 확인
+
+목적: 관리 단말(Admin)만 HQ2의 원격 관리(SSH)가 가능하도록 접근 제어가 정상 동작하는지 확인
+
+기대결과:
+
+Admin PC에서 HQ2으로 SSH 세션 수립 성공
+
+HQ2에서 show ssh 또는 show users로 접속 세션 확인
+
+[구성 참고]
+
+허용 소스: 192.168.50.5 (host)
+
+HQ2: access-list 10 permit host 192.168.50.5
+
+HQ2 VTY: transport input ssh, access-class 10 in
+
+[실행]
+
+Admin PC에서 HQ2으로 SSH 접속 시도
+
+장비: Admin PC (192.168.50.5)
+
+명령(예시): ssh -l <HQ2> <10.255.0.2>
+
+HQ2에서 SSH 세션 확인
+
+장비: HQ2
+
+명령: show ssh
+
+명령: show users

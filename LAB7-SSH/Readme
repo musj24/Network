@@ -33,6 +33,7 @@
 * **LAB6까지의 토폴로지 및 정책을 변경하지 않는다.**
 * 라우팅(OSPF), 이중화(HSRP), 운영 요소(NTP/Syslog)는 그대로 유지한다.
 * Packet Tracer 환경 제약을 인지하되, 실장비 기준 운영 설계를 우선한다.
+* HQ1, HQ2의 enable secret은 각기 HQ1, HQ2로 한다.
 
 ---
 

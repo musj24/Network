@@ -1,0 +1,62 @@
+# [0] Routing (Default + Inside Static Routes)
+route Inside 172.16.0.0 255.255.0.0 172.16.20.2
+route Outside 0.0.0.0 0.0.0.0 203.20.10.1
+
+access-list OUTSIDE_IN extended permit ip 192.168.50.0 255.255.255.248 172.16.10.0 255.255.255.0
+access-list OUTSIDE_IN extended permit ip any 203.20.10.0 255.255.255.252
+access-group OUTSIDE_IN in interface Outside
+
+
+# [1] Interface (Inside / Outside)
+
+interface vlan 1
+nameif Inside
+security-level 100
+ip address 172.16.20.1 255.255.255.252
+
+interface vlan 2
+nameif Outside
+security-level 0
+ip address 203.20.10.2 255.255.255.252
+
+
+# [2] Switchport VLAN Mapping
+interface e0/1
+switchport access vlan 1
+
+interface e0/0
+switchport access vlan 2
+
+# [3] Inspection (ICMP / HTTP)
+class-map inspection_default
+ match default-inspection-traffic
+
+policy-map global_policy
+ class inspection_default
+  inspect icmp
+  inspect http
+
+service-policy global_policy global
+
+# [4] VPN (Site_to_Site)
+access-list To_HQ_VPN extended permit ip 172.16.10.0 255.255.255.0 192.168.50.0 255.255.255.248
+
+crypto ikev1 enable Outside
+crypto ikev1 policy 10
+authentication pre-share
+encryption aes
+hash sha
+group 2
+lifetime 86400
+crypto ipsec ikev1 transform-set TS esp-aes esp-sha-hmac
+
+tunnel-group 203.0.60.6 type ipsec-l2l
+tunnel-group 203.0.60.6 ipsec-attributes
+ ikev1 pre-shared-key noname123
+
+crypto map To_HQ_VPN 10 match address To_HQ_VPN
+crypto map To_HQ_VPN 10 set peer 203.0.60.6
+crypto map To_HQ_VPN 10 set ikev1 transform-set TS
+crypto map To_HQ_VPN interface outside
+
+

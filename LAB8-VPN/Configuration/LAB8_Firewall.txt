@@ -1,0 +1,65 @@
+# [0] Routing (Default + Inside Static Routes)
+route outside 0.0.0.0 0.0.0.0 203.0.60.1
+route outside 0.0.0.0 0.0.0.0 203.0.60.2 5
+route inside 192.168.0.0 255.255.0.0 192.168.60.1
+route inside 192.168.0.0 255.255.0.0 192.168.60.2 5
+
+access-list OUTSIDE_IN extended permit ip 172.16.10.0 255.255.255.0 192.168.50.0 255.255.255.248
+access-group OUTSIDE_IN in interface outside
+
+# [1] Interface (Inside / Outside)
+interface vlan1
+ nameif inside
+ security-level 100
+ ip address 192.168.60.6 255.255.255.248
+
+interface vlan2
+ nameif outside
+ security-level 0
+ ip address 203.0.60.6 255.255.255.248
+
+# [2] Switchport VLAN Mapping
+interface e0/1
+ switchport access vlan 1
+interface e0/3
+ switchport access vlan 1
+
+interface e0/2
+ switchport access vlan 2
+interface e0/0
+ switchport access vlan 2
+
+# [3] Inspection (ICMP / HTTP)
+class-map inspection_default
+ match default-inspection-traffic
+
+policy-map global_policy
+ class inspection_default
+  inspect icmp
+  inspect http
+
+service-policy global_policy global
+
+# [4] VPN (Site_to_Site)
+
+access-list To_Branch_VPN extended permit ip 192.168.50.0 255.255.255.248 172.16.10.0 255.255.255.0
+
+crypto ikev1 enable Outside
+crypto ikev1 policy 10
+authentication pre-share
+encryption aes
+hash sha
+group 2
+lifetime 86400
+crypto ipsec ikev1 transform-set TS esp-aes esp-sha-hmac
+
+tunnel-group 203.20.10.2 type ipsec-l2l
+tunnel-group 203.20.10.2 ipsec-attributes
+ ikev1 pre-shared-key noname123
+
+crypto map To_Branch_VPN 10 match address To_Branch_VPN
+crypto map To_Branch_VPN 10 set peer 203.20.10.2
+crypto map To_Branch_VPN 10 set ikev1 transform-set TS
+crypto map To_Branch_VPN interface Outside
+
+

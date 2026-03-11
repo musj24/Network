@@ -15,12 +15,12 @@
 ## 수행 과정
 
 - vlan 명령어로 vlan 생성
- vlan 10, 		vlan 10 생성
- name USER, 	vlan 10의 이름을 USER라고 명명
+  - vlan 10, 		vlan 10 생성
+  -  name USER, 	vlan 10의 이름을 USER라고 명명
 
 - interface 설정
- switchport mode access,	포트 (g0/1)을 액세스 포트로 설정
- switchport access vlan 10,	g0/1 포트를 vlan 10에 포함
- description USER-PC1,	주석 포함
+   - switchport mode access,	포트 (g0/1)을 액세스 포트로 설정
+   - switchport access vlan 10,	g0/1 포트를 vlan 10에 포함
+   - description USER-PC1,	주석 포함
 
 - show vlan brief, show interface status, show interface g0/1 switchport 명령어로 검증

@@ -2,8 +2,8 @@
 - hostname: NonameL2
 - no ip domain-lookup (실수로 인한 DNS 쿼리 방지)
 - console 0
- - exec-time out 0 0 (자동 로그아웃 방지)
- - logging synchronous (명령어 입력 혼잡 방지)
+  - exec-time out 0 0 (자동 로그아웃 방지)
+  - logging synchronous (명령어 입력 혼잡 방지)
 
 # 포트 연결 및 설정
 

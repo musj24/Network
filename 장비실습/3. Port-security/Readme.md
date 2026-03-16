@@ -24,12 +24,12 @@
 
 ## 수행 과정
 
-- port-security			포트 보안 기능 on
+- port-security,			포트 보안 기능 on
   - port-security maximum 1,		포트에서 허용하는 MAC 주소수 설정 (현재 1)
   - port-security violation shutdown,	포트 보안설정 위반시 수행할 보안활동 (현재 포트 다운)
   - port-security mac-address sticky,	포트에서 MAC 주소를 학습하는 방법 (호스트 연결시 동적으로 학습후 유지)
 
-- ip dhcp snooping				dhcp snooping 기능 on
+- ip dhcp snooping,				dhcp snooping 기능 on
   - ip dhcp snooping vlan 10,20,99,		영향 받을 vlan 범위 설정
   - interface g0/15
      - ip dhcp snooping trust,			g0/15 포트를 신뢰하는 포트로 설정
